@@ -2,7 +2,7 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum Catch22Error {
-    #[error(display = "Empty input")]
+    #[error("Empty input")]
     EmptyInput,
 }
 

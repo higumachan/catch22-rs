@@ -1,0 +1,16 @@
+[package]
+name = "catch22-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+num = "0.4"
+itertools = "0.11"
+thiserror = "1.0"
+unwrap-ord = "0.1"
+
+[dev-dependencies]
+clap = {version = "4.3.17", features = ["derive"]}
+approx = "0.5"
