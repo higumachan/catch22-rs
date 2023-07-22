@@ -4,9 +4,11 @@ use std::{
     path::PathBuf,
 };
 
+use catch22_rs::features::dn_outlier_include_n_001_mdrmd::{
+    dn_outliner_include_n_001_mdrmd, dn_outliner_include_p_001_mdrmd,
+};
 use clap::Parser;
 use itertools::Itertools;
-use catch22_rs::features::dn_outlier_include_n_001_mdrmd::{dn_outliner_include_n_001_mdrmd, dn_outliner_include_p_001_mdrmd};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -15,12 +17,13 @@ struct Cli {
     input_file: PathBuf,
 }
 
+#[allow(clippy::dbg_macro)]
 fn main() {
     let cli = Cli::parse();
 
-    let mut input_file = File::open(cli.input_file).unwrap();
+    let input_file = File::open(cli.input_file).unwrap();
 
-    let mut buf_reader = BufReader::new(input_file);
+    let buf_reader = BufReader::new(input_file);
 
     let numbers = buf_reader
         .lines()

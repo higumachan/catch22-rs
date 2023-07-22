@@ -47,13 +47,13 @@ fn dn_outliner_include_np_001_mdrmd(y: &[Float], sign: i8) -> Catch22Result<Floa
     let mut mj = 0; // high_value_count - 1が2を超えた最初のj
     let mut ms_dti4 = Vec::with_capacity(threshold);
     for j in 0..threshold {
-        let mut indices = y_work
+        let indices = y_work
             .iter()
             .enumerate()
             .filter_map(|(idx, &x)| (x > j as f64 * inc()).then_some((idx + 1) as f64))
             .collect_vec();
         let high_value_count = indices.len();
-        let indices_diff = indices
+        let _indices_diff = indices
             .iter()
             .zip(indices.iter().skip(1))
             .map(|(&x, &y)| y - x)
@@ -77,7 +77,7 @@ fn dn_outliner_include_np_001_mdrmd(y: &[Float], sign: i8) -> Catch22Result<Floa
 mod tests {
     use super::*;
     use crate::test_utility::load_test_data;
-    use approx::{abs_diff_eq, assert_abs_diff_eq};
+    use approx::assert_abs_diff_eq;
 
     #[test]
     fn test_dn_outliner_include_n_001_mdrmd_same_original() {

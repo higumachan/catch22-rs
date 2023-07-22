@@ -1,0 +1,21 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+  - repo: local
+    hooks:
+      - id: fmt
+        name: fmt
+        language: system
+        files: '\.rs$'
+        entry: cargo +nightly fmt
+        pass_filenames: false
+      - id: clippy
+        name: clippy
+        language: system
+        files: '\.rs$'
+        entry: cargo clippy --all-targets --all -- -D warnings -W clippy::dbg_macro
+        pass_filenames: false
+default_language_version:
+  python: python3.9
