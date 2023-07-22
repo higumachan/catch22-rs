@@ -54,6 +54,38 @@ pub fn co_f1ecac(values: &[Float]) -> Catch22Result<Float> {
         .unwrap_or(values.len() as Float))
 }
 
+pub fn co_firstmin_ac(values: &[Float]) -> Catch22Result<Float> {
+    if any_nan(values) {
+        return Ok(Float::NAN);
+    }
+
+    let auto_corr = &co_autocorrs(values)?[..values.len()];
+
+    Ok(auto_corr
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find_map(|(i, &a)| (a < auto_corr[i - 1] && a < auto_corr[i + 1]).then_some(i as Float))
+        .unwrap_or(values.len() as Float))
+}
+
+pub fn co_trev_1_num(values: &[Float]) -> Catch22Result<Float> {
+    if any_nan(values) {
+        return Ok(Float::NAN);
+    }
+
+    mean_iter(
+        values
+            .iter()
+            .zip(values.iter().skip(1))
+            .map(|(a, an)| (an - a).powi(3)),
+    )
+    .ok_or(Catch22Error::SizeUnder {
+        len: values.len(),
+        expect_minimum: 2,
+    })
+}
+
 fn co_autocorrs(values: &[Float]) -> Catch22Result<Vec<Float>> {
     let mean = mean(values).unwrap();
     let n_fft = nextpow2(values.len())
@@ -130,6 +162,24 @@ mod tests {
             co_f1ecac(&numbers).unwrap(),
             32.50260547693647,
             epsilon = 1e-11
+        );
+    }
+
+    #[test]
+    fn test_co_firstmin_ac_same_original() {
+        let numbers = load_test_data();
+
+        assert_abs_diff_eq!(co_firstmin_ac(&numbers).unwrap(), 77.0, epsilon = 1e-12);
+    }
+
+    #[test]
+    fn test_co_trev_1_num_same_original() {
+        let numbers = load_test_data();
+
+        assert_abs_diff_eq!(
+            co_trev_1_num(&numbers).unwrap(),
+            0.00001782472612,
+            epsilon = 1e-10
         );
     }
 }

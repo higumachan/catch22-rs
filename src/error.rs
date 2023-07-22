@@ -6,6 +6,8 @@ pub enum Catch22Error {
     EmptyInput,
     #[error("Size Over")]
     SizeOver,
+    #[error("Size Over")]
+    SizeUnder { len: usize, expect_minimum: usize },
 }
 
 pub type Catch22Result<T> = Result<T, Catch22Error>;
