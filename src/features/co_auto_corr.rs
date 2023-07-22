@@ -2,9 +2,10 @@ use crate::error::{Catch22Error, Catch22Result};
 use crate::fft::{fft, twiddles};
 use crate::hist_count::hist_count_flexible;
 use crate::primitive::Float;
-use crate::utility::{any_nan, mean_iter, nextpow2, stddev};
+use crate::utility::{any_nan, mean, mean_iter, nextpow2, stddev};
 use itertools::Itertools;
 use num::{Complex, Zero};
+use std::f64::consts::E;
 use unwrap_ord::UnwrapOrd;
 
 pub fn co_embed2_dist_tau_d_expfit_meandiff(y: &[Float]) -> Catch22Result<Float> {
@@ -29,16 +30,40 @@ pub fn co_embed2_dist_tau_d_expfit_meandiff(y: &[Float]) -> Catch22Result<Float>
     .unwrap())
 }
 
-fn co_autocorrs(y: &[Float]) -> Catch22Result<Vec<Float>> {
-    let mean = y.iter().sum::<Float>() / y.len() as Float;
-    let n_fft = nextpow2(y.len())
+pub fn co_f1ecac(values: &[Float]) -> Catch22Result<Float> {
+    if any_nan(values) {
+        return Ok(Float::NAN);
+    }
+
+    let auto_corr = &co_autocorrs(values)?[..values.len()];
+
+    let threshold = 1.0 / E;
+
+    Ok(auto_corr
+        .iter()
+        .enumerate()
+        .zip(auto_corr.iter().skip(1))
+        .find_map(|((i, &a), &an)| {
+            (an < threshold).then(|| {
+                let m = an - a;
+                let dy = threshold - a;
+                let dx = dy / m;
+                (i as Float) + dx
+            })
+        })
+        .unwrap_or(values.len() as Float))
+}
+
+fn co_autocorrs(values: &[Float]) -> Catch22Result<Vec<Float>> {
+    let mean = mean(values).unwrap();
+    let n_fft = nextpow2(values.len())
         .and_then(|s| s.checked_shl(1))
         .ok_or(Catch22Error::SizeOver)?;
 
-    let mut f = y
+    let mut f = values
         .iter()
-        .map(|x| Complex::<Float>::new(x - mean, 0.0))
-        .chain((y.len()..n_fft).map(|_| Complex::zero()))
+        .map(|y| Complex::<Float>::new(y - mean, 0.0))
+        .chain((values.len()..n_fft).map(|_| Complex::zero()))
         .collect_vec();
 
     let tw = twiddles(n_fft);
@@ -95,5 +120,16 @@ mod tests {
             7.1350786087885,
             epsilon = 1e-5,
         )
+    }
+
+    #[test]
+    fn test_co_f1ecac_same_original() {
+        let numbers = load_test_data();
+
+        assert_abs_diff_eq!(
+            co_f1ecac(&numbers).unwrap(),
+            32.50260547693647,
+            epsilon = 1e-11
+        );
     }
 }

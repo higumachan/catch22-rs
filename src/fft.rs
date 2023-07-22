@@ -3,9 +3,9 @@ use itertools::Itertools;
 use num::Complex;
 use std::f64::consts::PI;
 
-pub fn fft(values: &mut [Complex<Float>], step: usize, tw: &[Complex<Float>]) {
+pub fn fft(values: &mut [Complex<Float>], size: usize, tw: &[Complex<Float>]) {
     let mut working = values.to_vec();
-    _fft(values, &mut working, values.len(), step, tw);
+    _fft(values, &mut working, size, 1, tw);
 }
 
 fn _fft(
@@ -15,7 +15,7 @@ fn _fft(
     step: usize,
     tw: &[Complex<Float>],
 ) {
-    if step < values.len() {
+    if step < size {
         _fft(working, values, size, step * 2, tw);
         _fft(
             &mut working[step..],
