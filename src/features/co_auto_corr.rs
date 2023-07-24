@@ -90,7 +90,7 @@ fn co_autocorrs(values: &[Float]) -> Catch22Result<Vec<Float>> {
     let mean = mean(values).unwrap();
     let n_fft = nextpow2(values.len())
         .and_then(|s| s.checked_shl(1))
-        .ok_or(Catch22Error::SizeOver)?;
+        .ok_or(Catch22Error::SizeOver(values.len()))?;
 
     let mut f = values
         .iter()
@@ -108,7 +108,7 @@ fn co_autocorrs(values: &[Float]) -> Catch22Result<Vec<Float>> {
     Ok(f.iter().map(|x| (x / divisor).re).collect_vec())
 }
 
-fn co_firstzero(y: &[Float], max_tau: usize) -> Catch22Result<usize> {
+pub fn co_firstzero(y: &[Float], max_tau: usize) -> Catch22Result<usize> {
     let ac = co_autocorrs(y)?;
 
     let (index, _) = ac
