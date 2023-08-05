@@ -1,7 +1,6 @@
 use crate::error::{Catch22Error, Catch22Result};
 use crate::primitive::Float;
 use crate::utility::{any_nan, mean_iter};
-use itertools::Itertools;
 
 pub fn sb_binarystats_diff_longstretch0(values: &[Float]) -> Catch22Result<Float> {
     if values.is_empty() {

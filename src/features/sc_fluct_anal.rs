@@ -1,11 +1,11 @@
 use crate::error::Catch22Result;
 use crate::primitive::Float;
 
-pub fn sc_fluct_anal_2_rsrangefit_50_1_logi_prop_r1(values: &[Float]) -> Catch22Result<Float> {
+pub fn sc_fluct_anal_2_rsrangefit_50_1_logi_prop_r1(_values: &[Float]) -> Catch22Result<Float> {
     todo!()
 }
 
-pub fn sc_fluct_anal_2_dfa_50_1_2_logi_prop_r1(values: &[Float]) -> Catch22Result<Float> {
+pub fn sc_fluct_anal_2_dfa_50_1_2_logi_prop_r1(_values: &[Float]) -> Catch22Result<Float> {
     todo!()
 }
 
